@@ -81,3 +81,18 @@ def count_hwd(data, climatology, start_year=1940, end_year=2024, start_month=1, 
     hwd = np.array(hwd)
     years = np.array(years)
     return years, hwd
+
+
+def seasonal_blocks(start_year,
+                    end_year,
+                    months):
+    if not all(1 <= m <= 12 for m in months):
+        raise ValueError("Months must be 1‑12")
+    blocks = []
+    for anchor in range(start_year, end_year):
+        block = []
+        for m in months:
+            yr = anchor + (1 if m < months[0] else 0)
+            block.append((yr, m))
+        blocks.append(block)
+    return blocks
