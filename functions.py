@@ -83,6 +83,14 @@ def count_hwd(data, climatology, start_year=1940, end_year=2024, start_month=1, 
     return years, hwd
 
 
+def compute_previous_years_prediction(hwd_climatology_full, num_years):
+    return np.concatenate(
+    (np.zeros(num_years), 
+    np.array([hwd_climatology_full[i:i+num_years].mean() for i in range(len(hwd_climatology_full)-num_years)])),
+    axis=None
+    )
+
+
 def seasonal_blocks(start_year,
                     end_year,
                     months):
