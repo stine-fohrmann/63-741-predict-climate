@@ -96,3 +96,15 @@ def seasonal_blocks(start_year,
             block.append((yr, m))
         blocks.append(block)
     return blocks
+
+# Calculates anomaly correlation coefficient
+def ACC(Ok, Oavg, Yk, Yavg):
+    Ydiff = Yk - Yavg
+    Odiff = Ok - Oavg
+    return sum(Ydiff*Odiff) / np.sqrt(sum(Ydiff**2) * sum(Odiff**2))
+
+# Calculates root mean square error
+def RMSE(O_k, Y_k):
+    N = len(O_k)
+    return np.sqrt(sum((Y_k - O_k)**2)/N)
+    
