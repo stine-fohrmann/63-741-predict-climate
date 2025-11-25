@@ -6,8 +6,12 @@ import numpy as np
 
 
 # Read data from file
-def read_from_file(filepath='~/code/predictions/data/ERA5_T2m_1940-2025.nc'):
-    return xr.open_dataset(filepath)
+# def read_from_file(filepath='~/code/predictions/data/ERA5_T2m_1940-2025.nc'):
+def read_from_file(filepath='data/ERA5_T2m_1940-2025.nc'):
+    data = xr.open_dataset(filepath)
+    if 'var167' in list(data.keys()):
+        data = data.rename({'var167': 'temp2'})
+    return data
 
 
 # Selects data subset for selected area (around Oslo) and time frame (1940-1969)
@@ -29,7 +33,7 @@ def get_data_subset(data,
 '''
 def compute_climatology(data, start_date = '1940-01-01', end_date = '1969-12-31'):
     # Select data subset for computing reference climatology (and convert to °C)
-    normal_subset = get_data_subset(data) - 273.15
+    normal_subset = get_data_subset(data)# - 273.15
 
     # Compute grid average temperature on each day
     # (spatial average temperature of the grid on each individual day between 1940 and 1969)
@@ -66,14 +70,14 @@ def count_hwd(data, climatology, start_year=1940, end_year=2024, start_month=1, 
             daily_grid_mean = subset.mean(dim=('lat', 'lon'))
 
             # Convert specific date into 'dayofyear' (necessary for anomaly calculation)
-            daily_grid_mean_toy = daily_grid_mean.copy().groupby('time.dayofyear').mean('time')
+            daily_grid_mean_doy = daily_grid_mean.copy().groupby('time.dayofyear').mean('time')
 
             # Compute diffence between daily grid mean temp and expected temp
-            difference = daily_grid_mean_toy-climatology
+            difference = daily_grid_mean_doy-climatology
 
             # Select anomalies greater than +5°C
             above_thr = difference >= 5
-            num_anomalies = above_thr['var167'].sum().item()
+            num_anomalies = above_thr.temp2.sum().item()
             hwd_per_year += num_anomalies
 
         hwd.append(hwd_per_year)
